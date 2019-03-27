@@ -6,7 +6,7 @@ from search import Searcher
 @click.argument('search', nargs=1)
 @click.option('--season', '-s', type=int, help='Season number; it will add the searchterm "S{num}" to the search. eg.`-s 1` -> S01')
 @click.option('--episode', '-e', type=int, help='Episode number; it will add the searchterm "S{num}" to the search. eg.`-e 1` -> E01')
-@click.option('--provider', '-p', help='Search on certain providers: eztv, kickass, thepiratebay, torrentgalaxy. Add a `-` to exclude a provider')
+@click.option('--provider', '-p', type=str, default='', help='Search on certain providers: eztv, kickass, thepiratebay, torrentgalaxy. Add a `-` to exclude a provider')
 
 def tor_cmd(search, season, episode, provider):
 	click.clear()
@@ -23,7 +23,7 @@ def tor_cmd(search, season, episode, provider):
 
 	# init searcher/webscrape framework
 	s = Searcher(search)
-	p = provider.split(',')
+	p = list(filter(None, provider.split(',')))
 	lp = s.p
 
 	click.echo('')

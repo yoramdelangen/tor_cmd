@@ -1,4 +1,5 @@
 import math
+from tqdm import tqdm
 from tabulate import tabulate
 from webscrap import Scraper, Config
 from urllib.parse import quote_plus
@@ -35,6 +36,8 @@ class Searcher():
 		s = Scraper(self.f, provider)
 		s.collectionsPath = confPath
 
+		bar = tqdm(total=len(provider), leave=False)
+
 		for collect in s.getCollections():
 			config = Config(collect)
 
@@ -43,7 +46,7 @@ class Searcher():
 			url = config.get('url')
 			url = url.format(quote_plus(self.s))
 
-			# print('URL', url)
+			bar.update()
 
 			if config.hasPagination():
 				for i in range(1, config.getPagination()+1):
@@ -60,6 +63,8 @@ class Searcher():
 				continue
 
 			s.scrapePage(url)
+
+		bar.close()
 
 		r = s.getDataset()
 
