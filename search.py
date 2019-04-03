@@ -72,8 +72,10 @@ class Searcher():
 
 		r['seeders'] = r['seeders'].apply(self.cleanNum_)
 		r['leechers'] = r['leechers'].apply(self.cleanNum_)
+		r['size'].fillna('', inplace=True)
 
 		self.r = r[r['seeders'] > 0]
+		self.r = self.r.sort_values(by='seeders', ascending=False)
 
 		return self.r
 
@@ -85,7 +87,6 @@ class Searcher():
 		Show the search results within
 		"""
 		r = self.r[['provider', 'name', 'seeders', 'leechers', 'size']] \
-			.sort_values(by='seeders', ascending=False) \
 			.to_dict('records')
 
 		h = {
