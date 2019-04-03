@@ -20,6 +20,8 @@ class Searcher():
 	def cleanNum_(self, x) -> int:
 		if x is None or type(x) is not str and math.isnan(x):
 			return 0
+		elif not x.isdigit():
+			return 0
 
 		return int(''.join(e for e in str(x) if e.isalnum()))
 
