@@ -21,6 +21,8 @@ def tor_cmd(search, season, episode, provider):
 	if show != '':
 		search += ' '+show
 
+
+
 	# init searcher/webscrape framework
 	s = Searcher(search)
 	p = list(filter(None, provider.split(',')))
@@ -36,6 +38,11 @@ def tor_cmd(search, season, episode, provider):
 
 	# search the web
 	r = s.lookup(lp)
+
+	# Can we load it from cache??
+	if s.fromCache():
+		click.echo('Load from cache')
+		click.echo('')
 
 	click.echo(s.show())
 	click.echo('')

@@ -1,8 +1,11 @@
-import math
+import math, os
 from tqdm import tqdm
 from tabulate import tabulate
 from webscrap import Scraper, Config
 from urllib.parse import quote_plus
+import pandas as pd
+from slugify import slugify
+
 
 class Searcher():
 	def __init__(self, searchTerm):
@@ -16,6 +19,7 @@ class Searcher():
 		}
 		self.f = ['name', 'seeders', 'leechers', 'size', 'magnet', 'provider']
 		self.r = None
+		self.fc = False
 
 	def cleanNum_(self, x) -> int:
 		if x is None or type(x) is not str and math.isnan(x):
@@ -25,10 +29,22 @@ class Searcher():
 
 		return int(''.join(e for e in str(x) if e.isalnum()))
 
+	def fromCache(self) -> bool:
+		"""
+		Was the search loaded from cache
+		"""
+		return self.fc
+
 	def lookup(self, provider=None, confPath='providers'):
 		"""
 		Start searching on the given provider.
 		"""
+
+		# Check if we searched for it already....
+		# When found cache file load it and return it...
+		if self.hasCache():
+			self.fc = True
+			return self.loadCache()
 
 		# set default all providers
 		if provider is None:
@@ -77,9 +93,15 @@ class Searcher():
 		self.r = r[r['seeders'] > 0]
 		self.r = self.r.sort_values(by='seeders', ascending=False)
 
+		# TODO: store within cache file
+		self.storeCache(self.r)
+
 		return self.r
 
 	def hasResults(self):
+		"""
+		Check if the result set is not empty
+		"""
 		return not self.r.empty
 
 	def show(self, fmt='tablefmt'):
@@ -100,4 +122,39 @@ class Searcher():
 		return tabulate(r, headers=h, tablefmt=fmt, showindex='always')
 
 	def getMagnet(self, idx: int):
+		"""
+		Get magnet URL from the results
+		"""
 		return self.r.iloc[idx]['magnet']
+
+	def getCacheFilename(self):
+		"""
+		Get the cache filename
+		"""
+		cacheSlug = slugify(self.s, to_lower=True)
+
+		return 'caches/%s.tor-cache' % cacheSlug
+
+	def loadCache(self):
+		"""
+		Load cache file.
+		"""
+		if not self.hasCache():
+			raise Exception('Cache did not exists for search '+ self.s)
+
+		self.r = pd.read_csv(self.getCacheFilename());
+
+		return self.r
+
+	def storeCache(self, results: pd.DataFrame):
+		"""
+		Store the results within a cache file.
+		"""
+		results.to_csv(self.getCacheFilename(), index=False)
+
+	def hasCache(self):
+		"""
+		Check if there a cache file for this search
+		"""
+		return os.path.isfile(self.getCacheFilename())
+
