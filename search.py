@@ -125,7 +125,9 @@ class Searcher():
 		"""
 		Get magnet URL from the results
 		"""
-		return self.r.iloc[idx]['magnet']
+		magnet = self.r.iloc[idx]['magnet']
+
+		return magnet.replace(' ', '+')
 
 	def getCacheFilename(self):
 		"""
