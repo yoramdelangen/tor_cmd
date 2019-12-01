@@ -35,14 +35,14 @@ class Searcher():
 		"""
 		return self.fc
 
-	def lookup(self, provider=None, confPath='providers'):
+	def lookup(self, provider=None, confPath='providers', skipCache=False):
 		"""
 		Start searching on the given provider.
 		"""
 
 		# Check if we searched for it already....
 		# When found cache file load it and return it...
-		if self.hasCache():
+		if self.hasCache() and skipCache is False:
 			self.fc = True
 			return self.loadCache()
 
@@ -79,6 +79,8 @@ class Searcher():
 			if config.withDetails():
 				s.scrapePageWithDetails(url)
 				continue
+
+			print(url)
 
 			s.scrapePage(url)
 

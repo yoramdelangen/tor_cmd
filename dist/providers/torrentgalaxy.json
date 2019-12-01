@@ -1,0 +1,13 @@
+{
+	"url": "https://torrentgalaxy.org/torrents.php?search={}&sort=seeders&order=desc",
+	"javascript": false,
+	"rows": ".tgxtable .tgxtablerow",
+	"mapping": {
+		"#provider": "torrentgalaxy",
+		"name": ".tgxtablecell:nth-child(4) a[title]",
+		"magnet": ".tgxtablecell:nth-child(5) a[role=button] @ href",
+		"seeders": ".tgxtablecell span[title=\"Seeders/Leechers\"] font[color=green]",
+		"leechers": ".tgxtablecell span[title=\"Seeders/Leechers\"] font:not([color=green])",
+		"size": ".tgxtablecell:nth-child(8) span"
+	}
+}

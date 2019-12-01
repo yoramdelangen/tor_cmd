@@ -8,8 +8,9 @@ from search import Searcher
 @click.option('--episode', '-e', type=int, help='Episode number; it will add the searchterm "S{num}" to the search. eg.`-e 1` -> E01')
 @click.option('--provider', '-p', type=str, default='', help='Search on certain providers: eztv, kickass, thepiratebay, torrentgalaxy. Add a `-` to exclude a provider')
 @click.option('--quiet', '-q', is_flag=True, help='When true this will only show the cache result file relative path. Very usefull for programs that will use this package.')
+@click.option('--no-cache', is_flag=True, help='Force the skip cache')
 
-def tor_cmd(search, season, episode, provider, quiet):
+def tor_cmd(search, season, episode, provider, quiet, no_cache):
 	click.clear()
 
 	show = ''
@@ -40,12 +41,19 @@ def tor_cmd(search, season, episode, provider, quiet):
 		del lp[k]
 
 	# search the web
-	r = s.lookup(lp)
+	r = s.lookup(lp, skipCache=no_cache)
 
 	# Can we load it from cache??
 	if s.fromCache():
 		click.echo('Load from cache')
 		click.echo('')
+
+	results = s.r.groupby('provider')['name'].count()
+	for provider in lp.keys():
+		if provider in results:
+			click.echo(provider+': '+str(results[provider]))
+		else:
+			click.echo(provider+': 0')
 
 	click.echo(s.show())
 	click.echo('')
