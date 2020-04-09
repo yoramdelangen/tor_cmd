@@ -6,11 +6,13 @@ verify_ssl = true
 [dev-packages]
 
 [packages]
-tqdm = "*"
-tabulate = "*"
-click = "*"
-unidecode = "*"
+tqdm = "==4.31.1"
+tabulate = "==0.8.3"
+click = "==7.0"
 awesome-slugify = "*"
+webscrap = {editable = true,path = "/Users/yoram/stack/Projects/webscrap"}
+Unidecode = "*"
+pandas = "*"
 
 [requires]
 python_version = "3.7"
